@@ -1,0 +1,277 @@
+services:
+  
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 9443:9443
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    networks:
+      homevlan:
+        ipv4_address: 192.168.0.20
+      services:
+
+  portainer_agent:
+    container_name: portainer-agent
+    hostname: portainer-agent
+    image: portainer/agent:latest
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+    restart: always
+    networks:
+      services:
+  
+  cloudflared:
+    container_name: cloudflared
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    labels:
+      - io.portainer.accesscontrol.public
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TOKEN}
+      TZ: ${TZ}
+    # networks:
+    #   - tunnel #a name for the Cloudflare Network
+    network_mode: "host"
+    # networks:
+    #     - homevlan  
+
+  dash:
+    container_name: dash
+    hostname: dash
+    image: mauricenino/dashdot:latest
+    restart: unless-stopped
+    privileged: true
+    # network_mode: host
+    labels:
+      - io.portainer.accesscontrol.public
+    environment:
+      DASHDOT_ENABLE_CPU_TEMPS: true
+      DASHDOT_SHOW_HOST: true
+      # DASHDOT_CUSTOM_HOST: 127.0.0.1
+      DASHDOT_DISABLE_INTEGRATIONS: true
+      DASHDOT_SHOW_DASH_VERSION: bottom_right
+      DASHDOT_ACCEPT_OOKLA_EULA: true
+      # DASHDOT_SPEED_TEST_FROM_PATH: /mnt/host
+      DASHDOT_OVERRIDE_RAM_BRAND: Crucial
+      DASHDOT_OVERRIDE_STORAGE_BRANDS: sda=Transcend,nvme0n1=Samsung
+      DASHDOT_OVERRIDE_CPU_MODEL: Ryzen 7 5700U with Radeon Graphics Lucienne
+      # DASHDOT_OVERRIDE_STORAGE_SIZES: sda=2045091627663,nvme0n1=512110425539
+    ports:
+      - '8888:3001'
+    volumes:
+      - /:/mnt/host:ro
+    networks:
+      services:   
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    labels:
+      - io.portainer.accesscontrol.public
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+      - /dev/dri/card1:/dev/dri/card1
+      # - /dev/dri:/dev/dri
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+      # - JELLYFIN_PublishedServerUrl=192.168.0.15 #optional
+    volumes:
+      - jellyfin_data:/config
+      - ${JELLYFIN_TVSHOWS_PATH}:/data/tvshows
+      - ${JELLYFIN_MOVIES_PATH}:/data/movies
+      # - ${JELLYFIN_MEDIA}:/data
+
+    # ports:
+    #   - 8096:8096
+    #   - 8920:8920 #optional
+    #   - 7359:7359/udp #optional
+    #   - 1900:1900/udp #optional
+
+  nginx_proxy_manager:
+    container_name: npm
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    privileged: true
+    labels:
+      - io.portainer.accesscontrol.public
+    environment:
+      TZ: ${TZ}
+      CONTAINER_DEBUG: 1
+      DISABLE_IPV6: 1
+      PUID: 1000
+      PGID: 1000
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - npm_data:/data
+      - ./letsencrypt:/etc/letsencrypt
+      # - ./nginx/html:/var/www/html
+      # - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx/conf/custom:/data/nginx/custom  
+    networks:
+      services:
+
+  # nav-host:
+  #   container_name: nav_host
+  #   image: ghcr.io/djwinston/nav_host:main
+  #   ports:
+  #     - '8088:8080'
+
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+    volumes:
+      - nextcloud_data:/config
+      - ${NEXTCLOUD_STORAGE}:/data
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 9191:80
+    restart: unless-stopped
+    networks:
+      services:
+
+  # adguardhome-sync:
+  #   image: lscr.io/linuxserver/adguardhome-sync:latest
+  #   container_name: adguardhome-sync
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     TZ: ${TZ}
+  #     CONFIGFILE: /config/adguardhome-sync.yaml #optional
+  #   volumes:
+  #     - ./config:/config
+  #   # ports:
+  #   #   - 4555:8080
+  #   restart: unless-stopped
+  #   networks:
+  #     homevlan:
+  #       ipv4_address: 192.168.0.30
+  #     services:
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    environment:
+      PUID: 0
+      PGID: 0
+      TZ: ${TZ}
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+      - homepage_images:/app/public/images
+      - /run/media/external:/mnt/sata_sda:ro
+    networks:
+      services:
+
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    pid: host
+    restart: unless-stopped
+    privileged: true
+    # network_mode: host
+    environment:
+      TZ: ${TZ}
+      GLANCES_OPT: -C /glances/conf/glances.conf -w
+    labels:
+      - io.portainer.accesscontrol.public
+    ports: 
+      - 61208:61208
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/glances/glances.conf:/glances/conf/glances.conf
+    networks:
+      services:
+
+  hbbs:
+    container_name: hbbs
+    image: rustdesk/rustdesk-server:latest
+    restart: unless-stopped
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 21115:21115
+      - 21116:21116
+      - 21116:21116/udp
+      # - 21118:21118
+    command: hbbs -r 127.0.0.1:21117 -k _
+    volumes:
+      - ./config/rustdesk:/root
+    networks:
+      services:
+    depends_on:
+      - hbbr
+
+  hbbr:
+    container_name: hbbr
+    image: rustdesk/rustdesk-server:latest
+    restart: unless-stopped
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 21117:21117
+      # - 21119:21119
+    command: hbbr -k _
+    volumes:
+      - ./config/rustdesk:/root
+    networks:
+      services:
+
+  dokemon:
+    container_name: dokemon
+    image: productiveops/dokemon:latest
+    restart: unless-stopped
+    labels:
+      - io.portainer.accesscontrol.public
+    ports:
+      - 9099:9090
+    volumes:
+      - ./config/dokemon:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      services:
+
+volumes:  
+  portainer_data:
+  qbittorrent_data:
+  jellyfin_data:
+  npm_data:
+  nextcloud_data:
+  homepage_images:
+
+networks:
+  homevlan:
+    external: true
+  services:

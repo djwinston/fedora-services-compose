@@ -1,0 +1,41 @@
+########################### SERVICES
+services:
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome
+    restart: unless-stopped
+    networks:
+      webvlan:
+        ipv4_address: 192.168.0.10 # IP address inside the defined range
+    ports:
+      - 53:53/udp
+      - 67:67/udp 
+      - 68:68/tcp 
+      - 68:68/udp 
+      - 80:80/tcp 
+      - 443:443/tcp 
+      - 853:853/tcp 
+      - 3000:3000/tcp 
+    volumes:
+      - adhome_conf:/opt/adguardhome/conf
+      - adhome_work:/opt/adguardhome/work
+      # - $DOCKERDIR/shared/certs/example.com:/certs # optional: if you have your own SSL certs
+
+########################### NETWORKS
+networks:
+  webvlan:
+    name: homevlan
+    driver: macvlan
+    enable_ipv6: false
+    driver_opts:
+      parent: br0 # using ifconfig
+    ipam:
+      config:
+        - subnet: "192.168.0.0/24"
+          # ip_range: "192.168.0.10/32"
+          gateway: "192.168.0.1"
+
+########################### VOLUMES
+volumes:
+  adhome_work:
+  adhome_conf:

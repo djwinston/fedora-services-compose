@@ -1,0 +1,24 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/bookmarks
+
+- Developer:
+    - 1inventory:
+        - icon: github-light.png
+          href: https://github.com/1warehouse/inventory-mobile-app
+    - 1inventory fork:
+        - icon: github-light.png
+          href: https://github.com/djwinston/inventory-mobile-app
+    - homebox:
+        - icon: mdi-link-circle
+          href: https://homebox.fly.dev/home
+
+# - Social:
+#     - Reddit:
+#         - abbr: RE
+#           href: https://reddit.com/
+
+# - Entertainment:
+#     - YouTube:
+#         - abbr: YT
+#           href: https://youtube.com/

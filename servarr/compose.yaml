@@ -1,0 +1,148 @@
+services:
+
+  prowlarr:
+    container_name: prowlarr
+    image: ghcr.io/hotio/prowlarr:latest
+    # image: ghcr.io/hotio/prowlarr:nightly
+    restart: unless-stopped
+    ports:
+      - "9696:9696"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - prowlarr_data:/config
+    networks:
+      - servarr
+
+  radarr:
+    container_name: radarr
+    image: ghcr.io/hotio/radarr:latest
+    restart: unless-stopped
+    ports:
+      - "7878:7878"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - radarr_data:/config
+      - ${SERVARR_HOST_PATH}:${SERVARR_CONTAINER_PATH}
+    networks:
+      - servarr
+
+  lidarr:
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:latest
+    restart: unless-stopped
+    ports:
+      - "8686:8686"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - lidarr_data:/config
+      - ${SERVARR_HOST_PATH}:${SERVARR_CONTAINER_PATH}
+    networks:
+      - servarr
+
+  sonarr:
+    container_name: sonarr
+    image: ghcr.io/hotio/sonarr:latest
+    # image: ghcr.io/hotio/sonarr:nightly
+    restart: unless-stopped
+    ports:
+      - "8989:8989"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - sonarr_data:/config
+      - ${SERVARR_HOST_PATH}:${SERVARR_CONTAINER_PATH}
+    networks:
+      - servarr
+
+  sabnzbd:
+    container_name: sabnzbd
+    image: ghcr.io/hotio/sabnzbd:latest
+    restart: unless-stopped
+    ports:
+      - "8787:8080"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - sabnzbd_data:/config
+      - ${SABNZBD_HOST_PATH}:${SABNZBD_CONTAINER_PATH}
+    networks:
+      - servarr
+
+  qbittorrent:
+    container_name: qbittorrent
+    image: ghcr.io/hotio/qbittorrent
+    restart: unless-stopped
+    ports:
+      - "6565:8080"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      UMASK: 002
+      TZ: ${TZ}
+      WEBUI_PORTS: 8080
+    volumes:
+      - qbittorrent_data:/config
+      - ${QBITTORRENT_HOST_PATH}:${QBITTORRENT_CONTAINER_PATH}
+    networks:
+      - servarr
+
+  recyclarr:
+    container_name: recyclarr
+    image: ghcr.io/recyclarr/recyclarr
+    restart: unless-stopped
+    user: 1000:1000
+    volumes:
+      - recyclarr_data:/config
+    environment:
+      TZ: ${TZ}
+    networks:
+      - servarr
+
+  flaresolverr:
+    container_name: flaresolverr
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    restart: unless-stopped
+    environment:
+      # - LOG_LEVEL=${LOG_LEVEL:-info}
+      # - LOG_HTML=${LOG_HTML:-false}
+      # - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      TZ: ${TZ}
+    ports:
+      - "8191:8191"
+    networks:
+      - servarr
+
+volumes:
+  qbittorrent_data:
+  sabnzbd_data:
+  sonarr_data:
+  lidarr_data:
+  radarr_data:
+  prowlarr_data:
+  recyclarr_data:
+
+networks:
+  servarr:

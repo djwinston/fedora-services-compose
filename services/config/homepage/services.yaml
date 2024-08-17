@@ -1,0 +1,234 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Servarr:
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://192.168.0.15:9696/
+        description: Indexer
+        server: server_docker
+        container: prowlarr
+    - Radarr:
+        icon: radarr-light.png
+        href: http://192.168.0.15:7878/
+        description: Movies manager
+        server: server_docker
+        container: radarr
+        widget:
+          type: radarr
+          url: http://192.168.0.15:7878
+          key: d93cf7eb765d49a79d57e7d4723818b8
+    - Sonarr:
+        icon: sonarr.png
+        href: http://192.168.0.15:8989/
+        description: TV Shows manager
+        server: server_docker
+        container: sonarr
+        widget:
+          type: sonarr
+          url: http://192.168.0.15:8989
+          key: a216ca7e401d4a6891f00270616a0be3
+    - Lidarr:
+        icon: lidarr.png
+        href: http://192.168.0.15:8686/
+        description: Music manager
+        server: server_docker
+        container: lidarr
+        widget:
+          type: lidarr
+          url: http://192.168.0.15:8686
+          key: 501afc0a45e947da889f32d911763412
+
+- Services:
+    - Home assistant:
+        icon: home-assistant.png
+        href: http://homeassistant.local:8123/
+        description: IOT manager
+        ping: http://192.168.0.15:8123
+    - Adguard home:
+        icon: adguard-home.png
+        href: http://192.168.0.10:4545
+        description: DNS filter
+        server: server_docker
+        container: adguardhome
+        # widget:
+        #   type: adguard
+        #   url: http://192.168.0.10:4545
+        #   username: admin_andrew
+        #   password: Q!@#$%54321q
+    - Dash.:
+        icon: https://dash.mauz.dev/logo512.png
+        href: http://192.168.0.15:8888/
+        description: System monitor
+        server: server_docker
+        container: dash
+    - Portainer:
+        icon: portainer.png
+        href: http://192.168.0.20:9000/
+        description: Docker manager
+        server: server_docker
+        container: portainer
+        # widget:
+        #     type: portainer
+        #     url: http://192.168.0.20:9000
+        #     env: 2
+        #     key: ptr_NXlHvV+qTdAxGI+yjtYShZRHIVH9WuvUsGcnMEGiQtg=
+    - JellyFin:
+        icon: jellyfin.png
+        href: http://192.168.0.15:8096/
+        description: Media manager
+        server: server_docker
+        container: jellyfin
+        # widget:
+        #     type: jellyfin
+        #     url: http://192.168.0.15:8096
+        #     key: ae63c737fe524f72b33ef720cd5a6fde
+        #     enableBlocks: true # optional, defaults to false
+        #     enableNowPlaying: true # optional, defaults to true
+    - Immich:
+        icon: immich.png
+        href: http://192.168.0.15:3033/
+        description: Photo manager
+        server: server_docker
+        container: immich_server
+        # widget:
+        #     type: immich
+        #     url: http://192.168.0.15:3033
+        #     key: 8JqX9gMsyma5whUdabQmVkUz807lowcylzGAIE4Y
+    - NGINX Proxy manager:
+        icon: nginx-proxy-manager.png
+        href: http://192.168.0.15:81/
+        description: Proxy manager
+        server: server_docker
+        container: npm
+        # widget:
+        #     type: npm
+        #     url: http://192.168.0.15:81
+        #     username: dj_winston@outlook.com
+        #     password: Q!@#$%54321q
+    - Nextcloud:
+        icon: nextcloud.png
+        href: http://192.168.0.15:9191/
+        description: Data manager
+        server: server_docker
+        container: nextcloud
+        # widget:
+        #     type: nextcloud
+        #     url: http://192.168.0.15:9191
+        #     username: admin_andrew
+        #     password: Q!@#$%54321q
+        # widget:
+        #     type: glances
+        #     url: http://192.168.0.15:61208/
+        #     # username: user # optional if auth enabled in Glances
+        #     # password: pass # optional if auth enabled in Glances
+        #     metric: cpu
+        #     diskUnits: bytes # optional, bytes (default) or bbytes. Only applies to disk
+        #     refreshInterval: 5000 # optional - in milliseconds, defaults to 1000 or more, depending on the metric
+        #     pointsLimit: 15 # optional, defaults to 15
+    - Glances:
+        icon: glances.png
+        href: http://192.168.0.15:61208
+        description: Statistic machine
+        server: server_docker
+        container: glances
+
+    - Cockpit:
+        icon: cockpit.png
+        href: http://192.168.0.15:9090
+        description: Monitoring
+        ping: http://192.168.0.15:9090
+
+    - WebMin:
+        icon: webmin.png
+        href: https://192.168.0.15:10000
+        description: Monitoring
+        ping: https://192.168.0.15:10000
+
+    - Dokemon:
+        icon: si-docker
+        href: http://192.168.0.15:9099
+        description: Docker manager
+        server: server_docker
+        container: dokemon
+
+- Downloader:
+    - QBitTorrent:
+        icon: qbittorrent.png
+        href: http://192.168.0.15:6565/
+        description: Torrent manager
+        server: server_docker
+        container: prowlarr
+        widget:
+            type: qbittorrent
+            url: http://192.168.0.15:6565
+            username: admin_andrew
+            password: Q!@#$%54321q
+    - Sabnzbd:
+        icon: sabnzbd.png
+        href: http://192.168.0.15:8787
+        description: Nzb manager
+        server: server_docker
+        container: prowlarr
+        widget:
+            type: sabnzbd
+            url: http://192.168.0.15:8787
+            key: 3b6d64d1dc52442bab2c4aee83672098
+
+- Metrics:
+    - Info:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: info
+            version: 4
+    - Memory Usage:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: memory
+            chart: false
+            version: 4
+    - nvme:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: disk:nvme0n1
+            chart: false
+            version: 4
+    - sda:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: disk:sda
+            chart: false
+            version: 4
+    - zram:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: disk:zram0
+            chart: false
+            version: 4
+    - CPU Usage:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: cpu
+            version: 4
+    - Network Usage:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: network:eth0
+            version: 4
+    - Top proccess:
+        widget:
+            type: glances
+            url: http://192.168.0.15:61208
+            metric: process
+            version: 4
+    
+    
+    
